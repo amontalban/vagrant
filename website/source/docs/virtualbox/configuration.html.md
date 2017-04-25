@@ -63,11 +63,11 @@ To have backward compatibility:
 
 ```ruby
 config.vm.provider 'virtualbox' do |v|
-  v.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+  v.linked_clone = true if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new('1.8.0')
 end
 ```
 
-If you do not want backward compatbility and want to force users to
+If you do not want backward compatibility and want to force users to
 support linked cloning, you can use `Vagrant.require_version` with 1.8.
 
 <div class="alert alert-info">

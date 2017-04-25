@@ -16,7 +16,8 @@ describe VagrantPlugins::Ansible::Config::Guest do
   let(:existing_file) { "this/path/is/a/stub" }
 
   it "supports a list of options" do
-    supported_options = %w( extra_vars
+    supported_options = %w( config_file
+                            extra_vars
                             galaxy_command
                             galaxy_role_file
                             galaxy_roles_path
@@ -26,7 +27,9 @@ describe VagrantPlugins::Ansible::Config::Guest do
                             install_mode
                             inventory_path
                             limit
+                            pip_args
                             playbook
+                            playbook_command
                             provisioning_path
                             raw_arguments
                             skip_tags
@@ -77,6 +80,14 @@ describe VagrantPlugins::Ansible::Config::Guest do
 
       result = subject.validate(machine)
       expect(subject.install_mode).to eql(:pip)
+    end
+
+    it "supports :pip_args_only install_mode" do
+      subject.install_mode = "pip_args_only"
+      subject.finalize!
+
+      result = subject.validate(machine)
+      expect(subject.install_mode).to eql(:pip_args_only)
     end
   end
 

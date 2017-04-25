@@ -207,7 +207,19 @@ module VagrantPlugins
           hostpath = hostpath.to_s.gsub("\\", "/")
         end
 
+        if guestpath.is_a?(Hash)
+          options = guestpath
+          guestpath = nil
+        end
+
         options ||= {}
+
+        if options.has_key?(:name)
+          synced_folder_name = options.delete(:name)
+        else
+          synced_folder_name = guestpath
+        end
+
         options[:guestpath] = guestpath.to_s.gsub(/\/$/, '')
         options[:hostpath]  = hostpath
         options[:disabled]  = false if !options.key?(:disabled)
@@ -217,7 +229,7 @@ module VagrantPlugins
         # Make sure the type is a symbol
         options[:type] = options[:type].to_sym if options[:type]
 
-        @__synced_folders[options[:guestpath]] = options
+        @__synced_folders[synced_folder_name] = options
       end
 
       # Define a way to access the machine via a network. This exposes a
@@ -247,9 +259,11 @@ module VagrantPlugins
           default_id = nil
 
           if type == :forwarded_port
-            # For forwarded ports, set the default ID to the
-            # host port so that host ports overwrite each other.
-            default_id = "#{options[:protocol]}#{options[:host]}"
+            # For forwarded ports, set the default ID to be the
+            # concat of host_ip, proto and host_port. This would ensure Vagrant
+            # caters for port forwarding in an IP aliased environment where
+            # different host IP addresses are to be listened on the same port.
+            default_id = "#{options[:host_ip]}#{options[:protocol]}#{options[:host]}"
           end
 
           options[:id] = default_id || SecureRandom.uuid
@@ -581,7 +595,7 @@ module VagrantPlugins
           @hostname && @hostname !~ /^[a-z0-9][-.a-z0-9]*$/i
 
         if @box_version
-          @box_version.split(",").each do |v|
+          @box_version.to_s.split(",").each do |v|
             begin
               Gem::Requirement.new(v.strip)
             rescue Gem::Requirement::BadRequirementError
@@ -626,7 +640,7 @@ module VagrantPlugins
           # If the shared folder is disabled then don't worry about validating it
           next if options[:disabled]
 
-          guestpath = Pathname.new(options[:guestpath])
+          guestpath = Pathname.new(options[:guestpath]) if options[:guestpath]
           hostpath  = Pathname.new(options[:hostpath]).expand_path(machine.env.root_path)
 
           if guestpath.to_s != ""
@@ -685,7 +699,7 @@ module VagrantPlugins
             end
 
             if options[:host]
-              key = "#{options[:protocol]}#{options[:host]}"
+              key = "#{options[:host_ip]}#{options[:protocol]}#{options[:host]}"
               if fp_used.include?(key)
                 errors << I18n.t("vagrant.config.vm.network_fp_host_not_unique",
                                 host: options[:host].to_s,

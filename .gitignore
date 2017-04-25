@@ -41,6 +41,10 @@ doc/
 
 # Ruby Managers
 .rbenv
+.rbenv-gemsets
 .ruby-gemset
 .ruby-version
 .rvmrc
+
+# Box storage for spec
+test/vagrant-spec/boxes/*.box

@@ -52,6 +52,9 @@ available below this section.
 * `environment_path` (string) - Path to the directory that contains environment
   files on the host disk.
 
+* `environment_variables` (hash) - A hash of string key/value pairs to be set as
+  environment variables before the puppet apply run.
+
 * `options` (array of strings) - Additionally options to pass to the
   Puppet executable when running Puppet.
 
@@ -89,6 +92,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "puppet"
 end
 ```
+
+~> `puppet` need to be installed in the guest vm.
 
 By default, Vagrant will configure Puppet to look for manifests in the
 "manifests" folder relative to the project root, and will use the

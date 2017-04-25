@@ -21,9 +21,9 @@ qualify.
 
 ## Volume Pricing
 
-We offer volume pricing when purchasing more than 100 licenses. If you or your
-organization plans to purchase more than 100 license seats, please contact
-support@hashicorp.com to learn more about volume discounts before making your
+We offer volume pricing when purchasing more than 150 licenses. If you or your
+organization plans to purchase more than 150 license seats, please contact
+sales@hashicorp.com to learn more about volume discounts before making your
 purchase.
 
 ## Quote
@@ -41,7 +41,7 @@ include the VMware software itself.
 ## Purchase Orders
 
 Although we prefer the self-serve purchase, you may email us a complete
-PO (with credit card information included) to support@hashicorp.com. We
+PO (with credit card information included) to sales@hashicorp.com. We
 will then process your order. **The minimum quantity for purchase orders is 50
 licenses!**
 
@@ -97,5 +97,5 @@ Business website and support:
 
 Our current registered business address is:
 
-    115 Sansome Street #1125
-    San Francisco, CA 94104
+    101 2nd Street #575
+    San Francisco, CA 94105

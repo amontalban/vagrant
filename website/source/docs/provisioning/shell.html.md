@@ -79,6 +79,10 @@ The remainder of the available options are optional:
   enable auto-login for Windows as the user must be logged in for interactive
   mode to work.
 
+* `md5` (string) - MD5 checksum used to validate remotely downloaded shell files.
+
+* `sha1` (string) - SHA1 checksum used to validate remotely downloaded shell files.
+
 <a name="inline-scripts"></a>
 ## Inline Scripts
 
@@ -148,7 +152,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-If you are running a Batch of PowerShell script for Windows, make sure
+If you are running a Batch or PowerShell script for Windows, make sure
 that the external path has the proper extension (".bat" or ".ps1"), because
 Windows uses this to determine what kind of file it is to execute. If you
 exclude this extension, it likely will not work.

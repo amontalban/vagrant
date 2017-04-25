@@ -18,6 +18,9 @@ that describes the current state a machine should be in, e.g. what
 packages should be installed, which services are running, and the
 contents of arbitrary files.
 
+_NOTE: The Salt provisioner is builtin to Vagrant. If the `vagrant-salt`
+plugin is installed, it should be uninstalled to ensure expected behavior._
+
 ## Masterless Quickstart
 
 What follows is a basic Vagrantfile that will get salt working
@@ -62,7 +65,7 @@ on this machine. Not supported on Windows guest machines.
 * `install_type`  (stable | git | daily | testing) - Whether to install from a
 distribution's stable package manager, git tree-ish, daily ppa, or testing repository.
 
-* `install_args` (develop) - When performing a git install, you can specify a branch, tag, or any treeish. Not supported on Windows.
+* `install_args` (string, default: "develop") - When performing a git install, you can specify a branch, tag, or any treeish. Not supported on Windows.
 
 * `always_install`   (boolean) - Installs salt binaries even
  if they are already detected, default `false`
@@ -72,7 +75,7 @@ distribution's stable package manager, git tree-ish, daily ppa, or testing repos
 * `bootstrap_options` (string) - Additional command-line options to
   pass to the bootstrap script.
 
-* `version`  (string, default: "2015.5.2") - Version of minion to be installed. Only supported on Windows guest machines.
+* `version`  (string, default: "2016.11.3") - Version of minion to be installed. Only supported on Windows guest machines.
 
 ## Minion Options
 These only make sense when `no_minion` is `false`.
@@ -80,11 +83,11 @@ These only make sense when `no_minion` is `false`.
 * `minion_config`    (string, default: "salt/minion") - Path to
 a custom salt minion config file.
 
-* `minion_key`  (string) - Path to your minion key
+* `minion_key`  (string, default: "salt/key/minion.key") - Path to your minion key
 
 * `minion_id`  (string) - Unique identifier for minion. Used for masterless and preseeding keys.
 
-* `minion_pub`  (salt/key/minion.pub) - Path to your minion
+* `minion_pub`  (string, default: "salt/key/minion.pub") - Path to your minion
 public key
 
 * `grains_config`  (string) - Path to a custom salt grains file. On Windows, the minion needs `ipc_mode: tcp` set otherwise it will [fail to communicate](https://github.com/saltstack/salt/issues/22796) with the master.
@@ -97,9 +100,9 @@ These only make sense when `install_master` is `true`. Not supported on Windows 
 * `master_config` (string, default: "salt/master")
   Path to a custom salt master config file.
 
-* `master_key` (salt/key/master.pem) - Path to your master key.
+* `master_key` (string, default: "salt/key/master.pem") - Path to your master key.
 
-* `master_pub` (salt/key/master.pub) - Path to your master public key.
+* `master_pub` (string, default: "salt/key/master.pub") - Path to your master public key.
 
 * `seed_master`  (dictionary) - Upload keys to master, thereby
 pre-seeding it before use. Example: `{minion_name:/path/to/key.pub}`
@@ -134,6 +137,9 @@ These may be used to control the output of state execution:
 * `log_level` (string) - The verbosity of the outputs. Defaults to "debug".
   Can be one of "all", "garbage", "trace", "debug", "info", or
   "warning". Requires `verbose` to be set to "true".
+
+* `verbose` (boolean) - The verbosity of the outputs. Defaults to "false".
+  Must be true for log_level taking effect and the output of the salt-commands being displayed.
 
 ## Pillar Data
 

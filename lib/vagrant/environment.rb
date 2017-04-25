@@ -121,7 +121,7 @@ module Vagrant
       @home_path  = Util::Platform.fs_real_path(@home_path)
       @boxes_path = @home_path.join("boxes")
       @data_dir   = @home_path.join("data")
-      @gems_path  = @home_path.join("gems")
+      @gems_path  = Vagrant::Bundler.instance.plugin_gem_path
       @tmp_path   = @home_path.join("tmp")
       @machine_index_dir = @data_dir.join("machine-index")
 
@@ -157,13 +157,19 @@ module Vagrant
       end
 
       # Setup the local data directory. If a configuration path is given,
-      # then it is expanded relative to the working directory. Otherwise,
-      # we use the default which is expanded relative to the root path.
-      opts[:local_data_path] ||= ENV["VAGRANT_DOTFILE_PATH"] if !opts[:child]
-      opts[:local_data_path] ||= root_path.join(DEFAULT_LOCAL_DATA) if !root_path.nil?
+      # it is expanded relative to the root path. Otherwise, we use the
+      # default (which is also expanded relative to the root path).
+      if !root_path.nil?
+        if !ENV["VAGRANT_DOTFILE_PATH"].to_s.empty? && !opts[:child]
+          opts[:local_data_path] ||= Pathname.new(File.expand_path(ENV["VAGRANT_DOTFILE_PATH"], root_path))
+        else
+          opts[:local_data_path] ||= root_path.join(DEFAULT_LOCAL_DATA)
+        end
+      end
       if opts[:local_data_path]
         @local_data_path = Pathname.new(File.expand_path(opts[:local_data_path], @cwd))
       end
+      @logger.debug("Effective local data path: #{@local_data_path}")
 
       # If we have a root path, load the ".vagrantplugins" file.
       if root_path
@@ -289,7 +295,7 @@ module Vagrant
     #
     # @return [Hash]
     def checkpoint
-      @checkpoint_thr.join
+      @checkpoint_thr.join(THREAD_MAX_JOIN_TIMEOUT)
       return @checkpoint_thr[:result]
     end
 
@@ -332,7 +338,7 @@ module Vagrant
       # a priority to each in the order they exist so that we try these first.
       config = {}
       root_config.vm.__providers.reverse.each_with_index do |key, idx|
-        config[key] = idx
+        config[key] = idx + 1
       end
 
       # Determine the max priority so that we can add the config priority

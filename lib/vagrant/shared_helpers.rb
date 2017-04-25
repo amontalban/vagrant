@@ -12,6 +12,12 @@ module Vagrant
   # @return [String]
   DEFAULT_SERVER_URL = "https://atlas.hashicorp.com"
 
+  # Max number of seconds to wait for joining an active thread.
+  #
+  # @return [Integer]
+  # @note This is not the maxium time for a thread to complete.
+  THREAD_MAX_JOIN_TIMEOUT = 60
+
   # This holds a global lock for the duration of the block. This should
   # be invoked around anything that is modifying process state (such as
   # environmental variables).
@@ -38,11 +44,18 @@ module Vagrant
     ENV["VAGRANT_INSTALLER_EMBEDDED_DIR"]
   end
 
+  # Should the plugin system be initialized
+  #
+  # @return [Boolean]
+  def self.plugins_init?
+    !ENV['VAGRANT_DISABLE_PLUGIN_INIT']
+  end
+
   # This returns whether or not 3rd party plugins should and can be loaded.
   #
   # @return [Boolean]
   def self.plugins_enabled?
-    !ENV["VAGRANT_NO_PLUGINS"] && $vagrant_bundler_runtime
+    !ENV["VAGRANT_NO_PLUGINS"]
   end
 
   # Whether or not super quiet mode is enabled. This is ill-advised.
@@ -94,5 +107,13 @@ module Vagrant
     path ||= "~/.vagrant.d"
 
     Pathname.new(path).expand_path
+  end
+
+  # This returns true/false if the running version of Vagrant is
+  # a pre-release version (development)
+  #
+  # @return [Boolean]
+  def self.prerelease?
+    Gem::Version.new(Vagrant::VERSION).prerelease?
   end
 end

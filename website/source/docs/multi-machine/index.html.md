@@ -73,17 +73,22 @@ below:
 
 ```ruby
 Vagrant.configure("2") do |config|
-    config.vm.provision :shell, inline: "echo A"
-    config.vm.define :testing do |test|
-        test.vm.provision :shell, inline: "echo B"
-    end
-    config.vm.provision :shell, inline: "echo C"
+  config.vm.provision :shell, inline: "echo A"
+
+  config.vm.define :testing do |test|
+    test.vm.provision :shell, inline: "echo B"
+  end
+
+  config.vm.provision :shell, inline: "echo C"
 end
 ```
 
 The provisioners in this case will output "A", then "C", then "B". Notice
 that "B" is last. That is because the ordering is outside-in, in
 the order of the file.
+
+If you want to apply a slightly different configuration to multiple machines,
+see [this tip](/docs/vagrantfile/tips.html#loop-over-vm-definitions).
 
 ## Controlling Multiple Machines
 

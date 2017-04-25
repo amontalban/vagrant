@@ -25,7 +25,6 @@ module Vagrant
       def initialize(*command)
         @options = command.last.is_a?(Hash) ? command.pop : {}
         @command = command.dup
-        @command = @command.map { |s| s.encode(Encoding.default_external) }
         @command[0] = Which.which(@command[0]) if !File.file?(@command[0])
         if !@command[0]
           raise Errors::CommandUnavailableWindows, file: command[0] if Platform.windows?
@@ -35,6 +34,26 @@ module Vagrant
         @logger  = Log4r::Logger.new("vagrant::util::subprocess")
       end
 
+      # @return [TrueClass, FalseClass] subprocess is currently running
+      def running?
+        !!(@process && @process.alive?)
+      end
+
+      # Stop the subprocess if running
+      #
+      # @return [TrueClass] FalseClass] true if process was running and stopped
+      def stop
+        if @process && @process.alive?
+          @process.stop
+          true
+        else
+          false
+        end
+      end
+
+      # Start the process
+      #
+      # @return [Result]
       def execute
         # Get the timeout, if we have one
         timeout = @options[:timeout]
@@ -62,7 +81,7 @@ module Vagrant
 
         # Build the ChildProcess
         @logger.info("Starting process: #{@command.inspect}")
-        process = ChildProcess.build(*@command)
+        @process = process = ChildProcess.build(*@command)
 
         # Create the pipes so we can read the output in real time as
         # we execute the command.
@@ -144,10 +163,11 @@ module Vagrant
         # Record the start time for timeout purposes
         start_time = Time.now.to_i
 
+        open_readers = [stdout, stderr]
+        open_writers = notify_stdin ? [process.io.stdin] : []
         @logger.debug("Selecting on IO")
         while true
-          writers = notify_stdin ? [process.io.stdin] : []
-          results = ::IO.select([stdout, stderr], writers, nil, 0.1)
+          results = ::IO.select(open_readers, open_writers, nil, 0.1)
           results ||= []
           readers = results[0]
           writers = results[1]
@@ -178,8 +198,14 @@ module Vagrant
           break if process.exited?
 
           # Check the writers to see if they're ready, and notify any listeners
-          if writers && !writers.empty?
-            yield :stdin, process.io.stdin if block_given?
+          if writers && !writers.empty? && block_given?
+            yield :stdin, process.io.stdin
+
+            # if the callback closed stdin, we should remove it, because
+            # IO.select() will throw if called with a closed io.
+            if process.io.stdin.closed?
+              open_writers = []
+            end
           end
         end
 
@@ -290,7 +316,9 @@ module Vagrant
       def jailbreak(env = {})
         return if ENV.key?("VAGRANT_SKIP_SUBPROCESS_JAILBREAK")
 
-        env.replace(::Bundler::ORIGINAL_ENV) if defined?(::Bundler::ORIGINAL_ENV)
+        if defined?(::Bundler) && defined?(::Bundler::ORIGINAL_ENV)
+          env.replace(::Bundler::ORIGINAL_ENV)
+        end
         env.merge!(Vagrant.original_env)
 
         # Bundler does this, so I guess we should as well, since I think it

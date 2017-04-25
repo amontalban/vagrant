@@ -53,9 +53,17 @@ module VagrantPlugins
          execute('delete_vm.ps1', { VmId: vm_id })
        end
 
+      def export(path)
+        execute('export_vm.ps1', {VmId: vm_id, Path: path})
+      end
+
        def read_guest_ip
          execute('get_network_config.ps1', { VmId: vm_id })
        end
+
+      def read_mac_address
+        execute('get_network_mac.ps1', { VmId: vm_id })
+      end
 
        def resume
          execute('resume_vm.ps1', { VmId: vm_id })
@@ -74,7 +82,15 @@ module VagrantPlugins
        end
 
        def import(options)
-         execute('import_vm.ps1', options)
+         config_type = options.delete(:vm_config_type)
+         if config_type === "vmcx"
+           execute('import_vm_vmcx.ps1', options)
+         else
+           options.delete(:data_path)
+           options.delete(:source_path)
+           options.delete(:differencing_disk)
+           execute('import_vm_xml.ps1', options)
+         end
        end
 
        def net_set_vlan(vlan_id)
@@ -101,6 +117,10 @@ module VagrantPlugins
        def delete_snapshot(snapshot_name)
           execute("delete_snapshot.ps1", {VmID: vm_id, SnapName: snapshot_name})
        end
+
+      def set_vm_integration_services(config)
+        execute("set_vm_integration_services.ps1", config)
+      end
 
       protected
 

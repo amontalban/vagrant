@@ -18,11 +18,8 @@ than ideal performance with synced folders, [NFS](https://en.wikipedia.org/wiki/
 can offer a solution. Vagrant has built-in support to orchestrate the
 configuration of the NFS server on the host and guest for you.
 
-<div class="alert alert-info">
-  <strong>Windows users:</strong> NFS folders do not work on Windows
-  hosts. Vagrant will ignore your request for NFS synced folders on
-  Windows.
-</div>
+~> **Windows users:** NFS folders do not work on Windows hosts. Vagrant will
+ignore your request for NFS synced folders on Windows.
 
 ## Prerequisites
 
@@ -44,8 +41,6 @@ To enable NFS, just add the `type: "nfs"` flag onto your synced folder:
 
 ```ruby
 Vagrant.configure("2") do |config|
-  # ...
-
   config.vm.synced_folder ".", "/vagrant", type: "nfs"
 end
 ```
@@ -94,10 +89,10 @@ In addition to the options specified above, it is possible for Vagrant to
 specify alternate NFS arguments when mounting the NFS share by using the
 `mount_options` key. For example, to use the `actimeo=2` client mount option:
 
-```
+```ruby
 config.vm.synced_folder ".", "/vagrant",
-    :nfs => true,
-    :mount_options => ['actimeo=2']
+  nfs: true,
+  mount_options: ['actimeo=2']
 ```
 
 This would result in the following `mount` command being executed on the guest:
@@ -112,10 +107,10 @@ when the mount is added, by using the OS-specific `linux__nfs_options` or
 arguments that are added by Vagrant automatically. For example, to make the
 NFS share asynchronous:
 
-```
+```ruby
 config.vm.synced_folder ".", "/vagrant",
-    :nfs => true,
-    :linux__nfs_options => ['rw','no_subtree_check','all_squash','async']
+  nfs: true,
+  linux__nfs_options: ['rw','no_subtree_check','all_squash','async']
 ```
 
 This would result in the following content in `/etc/exports` on the host (note
@@ -160,26 +155,29 @@ Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /usr/bin/sed -E -e /*/ d -ibak /etc/exports
 For Ubuntu Linux , sudoers should look like this:
 
 ```
-Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports
-Cmnd_Alias VAGRANT_EXPORTS_COPY = /bin/cp /tmp/exports /etc/exports
+Cmnd_Alias VAGRANT_EXPORTS_CHOWN = /bin/chown 0\:0 /tmp/*
+Cmnd_Alias VAGRANT_EXPORTS_MV = /bin/mv -f /tmp/* /etc/exports
 Cmnd_Alias VAGRANT_NFSD_CHECK = /etc/init.d/nfs-kernel-server status
 Cmnd_Alias VAGRANT_NFSD_START = /etc/init.d/nfs-kernel-server start
 Cmnd_Alias VAGRANT_NFSD_APPLY = /usr/sbin/exportfs -ar
-Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /bin/sed -r -e * d -ibak /tmp/exports
-%sudo ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY, VAGRANT_EXPORTS_REMOVE, VAGRANT_EXPORTS_COPY
+%sudo ALL=(root) NOPASSWD: VAGRANT_EXPORTS_CHOWN, VAGRANT_EXPORTS_MV, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY
 ```
 
 For Fedora Linux, sudoers might look like this (given your user
 belongs to the vagrant group):
 
 ```
-Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports
+Cmnd_Alias VAGRANT_EXPORTS_CHOWN = /bin/chown 0\:0 /tmp/*
+Cmnd_Alias VAGRANT_EXPORTS_MV = /bin/mv -f /tmp/* /etc/exports
 Cmnd_Alias VAGRANT_NFSD_CHECK = /usr/bin/systemctl status --no-pager nfs-server.service
 Cmnd_Alias VAGRANT_NFSD_START = /usr/bin/systemctl start nfs-server.service
 Cmnd_Alias VAGRANT_NFSD_APPLY = /usr/sbin/exportfs -ar
-Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /bin/sed -r -e * d -ibak /tmp/exports
-%vagrant ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY, VAGRANT_EXPORTS_REMOVE
+%vagrant ALL=(root) NOPASSWD: VAGRANT_EXPORTS_CHOWN, VAGRANT_EXPORTS_MV, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY
 ```
+
+If you don't want to edit `/etc/sudoers` directly, you can create
+`/etc/sudoers.d/vagrant-syncedfolders` with the appropriate entries,
+assuming `/etc/sudoers.d` has been enabled.
 
 ## Other Notes
 
@@ -188,3 +186,29 @@ will refuse to export the filesystem. The error message given by NFS is
 often not clear. One error message seen is `<path> does not support NFS`.
 There is no workaround for this other than sharing a directory which is not
 encrypted.
+
+**Version 4:** UDP is generally not a valid transport protocol for NFSv4.
+Early implementations of NFS 4.0 still allowed UDP which allows the UDP
+transport protocol to be used in rare cases. RFC5661 explicitly states
+UDP alone should not be used for the transport protocol in NFS 4.1. Errors
+due to unsupported transport protocols for specific versions of NFS are
+not always clear. A common error message when attempting to use UDP with
+NFSv4:
+
+```
+mount.nfs: an incorrect mount option was specified
+```
+
+When using NFSv4, ensure the `nfs_udp` option is set to false. For example:
+
+```ruby
+config.vm.synced_folder ".", "/vagrant",
+  nfs: true,
+  nfs_version: 4,
+  nfs_udp: false
+```
+
+For more information about transport protocols and NFS version 4 see:
+
+* NFSv4.0 - [RFC7530](https://tools.ietf.org/html/rfc7530#section-3.1)
+* NFSv4.1 - [RFC5661](https://tools.ietf.org/html/rfc5661#section-2.9.1)

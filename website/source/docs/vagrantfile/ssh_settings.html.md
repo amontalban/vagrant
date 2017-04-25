@@ -68,7 +68,7 @@ any keys stored in ssh-agent). The default value is `true`.`
 <hr>
 
 `config.ssh.paranoid` - Perform strict host-key verification. The default value
-is `true`.
+is `false`.
 
 <hr>
 
@@ -117,6 +117,15 @@ absolutely necessary. It breaks some other features of Vagrant, and is
 really only exposed for cases where it is absolutely necessary. If you can find
 a way to not use a pty, that is recommended instead.
 
+When pty is enabled, it is important to note that command output will _not_ be
+streamed to the UI. Instead, the output will be delievered in full to the UI
+once the command has completed.
+
+<hr>
+
+`config.ssh.keep_alive` If `true`, this setting SSH will send keep-alive packets
+every 5 seconds by default to keep connections alive.
+
 <hr>
 
 `config.ssh.shell` - The shell to use when executing SSH commands from
@@ -125,6 +134,17 @@ the shell you get when you run `vagrant ssh`. This configuration option
 only affects the shell to use when executing commands internally in Vagrant.
 
 <hr>
+
+`config.ssh.export_command_template` - The template used to generate
+exported environment variables in the active session. This can be useful
+when using a Bourne incompatible shell like C shell. The template supports
+two variables which are replaced with the desired environment variable key and
+environment variable value: `%ENV_KEY%` and `%ENV_VALUE%`. The default template
+is:
+
+```ruby
+config.ssh.export_command_template = 'export %ENV_KEY%="%ENV_VALUE%"'
+```
 
 `config.ssh.sudo_command` - The command to use when executing a command
 with `sudo`. This defaults to `sudo -E -H %c`. The `%c` will be replaced by

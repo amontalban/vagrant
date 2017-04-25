@@ -1,4 +1,218 @@
-## Next Version (Unreleased)
+## Next version (Unreleased)
+
+FEATURES:
+
+IMPROVEMENTS:
+
+BUG FIXES:
+
+## 1.9.4 (April 24, 2017)
+
+FEATURES:
+
+  - command/validate: Add Vagrantfile validation command [GH-8264, GH-8151]
+  - communicators/winssh: Add WinSSH communicator for Win32-OpenSSH [GH-8485]
+  - provider/hyperv: Support integration services configuration [GH-8379, GH-8378]
+
+IMPROVEMENTS:
+
+  - core: Update internal dependencies [GH-8329, GH-8456]
+  - core/bundler: Warn when plugin require fails instead of generating hard failure [GH-8400, GH-8392]
+  - core/bundler: Error when configured plugin sources are unavailable [GH-8442]
+  - guests/elementary: Add support for new guest "Elementary OS" [GH-8472]
+  - guests/esxi: Add public_key capability [GH-8310]
+  - guests/freebsd: Add chef_install and chef_installed? capabilities [GH-8443]
+  - guests/gentoo: Add support for systemd in network configuration [GH-8407, GH-8406]
+  - guests/windows: Support mounting synced folders via SSH on windows [GH-7425, GH-6220]
+  - hosts/windows: Improve user permission detection [GH-7797]
+  - provider/docker: Improve IP and port detection [GH-7840, GH-7651]
+  - provider/docker: Do not force docker host VM on Darwin or Windows [GH-8437, GH-7895]
+  - provisioners/ansible_local: Add `pip_args` option to define additional parameters when installing Ansible via pip [GH-8170, GH-8405]
+  - provisioners/ansible_local: Add `:pip_args_only` install mode to allow full custom pip installations [GH-8405]
+  - provisioners/salt: Update minion version installed to 2016.11.3 [GH-8448]
+
+BUG FIXES:
+
+  - command/box: Remove extraneous sort from box list prior to display [GH-8422]
+  - command/box: Properly handle local paths with spaces for box add [GH-8503, GH-6825]
+  - command/up: Prevent other provider installation when explicitly defined [GH-8393, GH-8389]
+  - communicators/ssh: Do not yield empty output data [GH-8495, GH-8259]
+  - core: Provide fallback and retry when 0.0.0.0 is unavailable during port check [GH-8399, GH-8395]
+  - core: Support port checker methods that do not expect inclusion of host_ip [GH-8497, GH-8423]
+  - core/bundler: Check if source is local path and prevent addition to remote sources [GH-8401]
+  - core/ui: Prevent deadlock detection errors [GH-8414, GH-8125]
+  - guests/debian: Remove hardcoded device name in interface template [GH-8336, GH-7960]
+  - guests/linux: Fix SMB mount capbability [GH-8410, GH-8404]
+  - hosts/windows: Fix issues with Windows encoding [GH-8385, GH-8380, GH-8212, GH-8207, GH-7516]
+  - hosts/windows: Fix UNC path generation when UNC paath is provided [GH-8504]
+  - provisioners/salt: Allow Salt version to match 2 digit month [GH-8428]
+  - provisioners/shell: Properly handle remote paths on Windows that include spaces [GH-8498, GH-7234]
+
+## 1.9.3 (March 21, 2017)
+
+IMPROVEMENTS:
+
+  - command/plugin: Remove requirement for paths with no spaces [GH-7967]
+  - core: Support host_ip for forwarded ports [GH-7035, GH-8350]
+  - core: Include disk space hint in box install failure message [GH-8089]
+  - core/bundler: Allow vagrant constraint matching in prerelease mode [GH-8341]
+  - provisioner/docker: Include /bin/docker as valid path [GH-8390]
+  - provider/hyperv: Support enabling Hyper-V nested virtualization [GH-8325, GH-7738]
+
+BUG FIXES:
+
+  - communicator/winrm: Prevent inaccurate WinRM address [GH-7983, GH-8073]
+  - contrib/bash: Handle path spaces in bash completion [GH-8337]
+  - core: Fix box sorting on find and list [GH-7956, GH-8334]
+  - core/bundler: Force path as preferred source on install [GH-8327]
+  - core/provision: Update "never" behavior to match documentation [GH-8366, GH-8016]
+  - plugins/push: Isolate deprecation to Atlas strategy only
+  - plugins/synced_folders: Give UID/GID precedence if found within mount options
+      [GH-8122, GH-8064, GH-7859]
+
+## 1.9.2 (February 27, 2017)
+
+FEATURES:
+
+  - providers/hyperv: Support packaging of Hyper-V boxes [GH-7867]
+  - util/command_deprecation: Add utility module for command deprecation [GH-8300]
+  - util/subprocess: Add #stop and #running? methods [GH-8270]
+
+IMPROVEMENTS:
+
+  - commands/expunge: Display default value on prompt and validate input [GH-8192, GH-8171]
+  - communicator/winrm: Refactor WinRM communicator to use latest WinRM
+      gems and V2 API [GH-8102]
+  - core: Scrub URL credentials from output when adding boxes [GH-8194, GH-8117]
+  - providers/hyperv: Prefer VMCX over XML configuration when VMCX is supported [GH-8119]
+
+BUG FIXES:
+
+  - command/init: Include box version when using minimal option [GH-8283, GH-8282]
+  - command/package: Fix SecureRandom constant error [GH-8159]
+  - communicator/ssh: Remove any STDERR output prior to command execution [GH-8291, GH-8288]
+  - core/bundler: Prevent pristine warning messages [GH-8191, GH-8190, GH-8147]
+  - core/bundler: Fix local installations of pre-release plugins [GH-8252, GH-8253]
+  - core/bundler: Prefer user defined source when installing plugins [GH-8273, GH-8210]
+  - core/environment: Prevent persisting original environment variable if name is empty
+      [GH-8198, GH-8126]
+  - core/environment: Fix gems_path location [GH-8248]
+  - core/environment: Properly expand dotfile path [GH-8196, GH-8108]
+  - guests/arch: Fix configuring multiple network interfaces [GH-8165]
+  - guests/linux: Fix guest detection for names with spaces [GH-8092]
+  - guests/redhat: Fix network interface configuration [GH-8148]
+
+DEPRECATIONS:
+
+  - command/push: Disable push command [GH-8300]
+
+## 1.9.1 (December 7, 2016)
+
+IMPROVEMENTS:
+
+  - core: Disable Vagrantfile loading when running plugin commands [GH-8066]
+  - guests/redhat: Detect and restart NetworkManager service if in use [GH-8052, GH-7994]
+
+BUG FIXES:
+
+  - core: Detect load failures within install solution sets and retry [GH-8068]
+  - core: Prevent interactive shell on plugin uninstall [GH-8086, GH-8087]
+  - core: Remove bundler usage from Util::Env [GH-8090, GH-8094]
+  - guests/linux: Prevent stderr output on init version check for synced folders [GH-8051]
+
+## 1.9.0 (November 28, 2016)
+
+FEATURES:
+
+  - commands/box: Add `prune` subcommand for removing outdated boxes [GH-7978]
+  - core: Remove Bundler integration for handling internal plugins [GH-7793, GH-8000, GH-8011, GH-8031]
+  - providers/hyperv: Add support for Hyper-V binary configuration format
+      [GH-7854, GH-7706, GH-6102]
+  - provisioners/shell: Support MD5/SHA1 checksum validation of remote scripts [GH-7985, GH-6323]
+
+IMPROVEMENTS:
+
+  - commands/plugin: Retain name sorted output when listing plugins [GH-8028]
+  - communicator/ssh: Support custom environment variable export template
+      [GH-7976, GH-6747]
+  - provisioners/ansible(both): Add `config_file` option to point the location of an
+      `ansible.cfg` file via ANSIBLE_CONFIG environment variable [GH-7195, GH-7918]
+  - synced_folders: Support custom naming and disable auto-mount [GH-7980, GH-6836]
+
+BUG FIXES:
+
+  - guests/linux: Do not match interfaces with special characters when sorting [GH-7989, GH-7988]
+  - provisioner/salt: Fix Hash construction for constant [GH-7986, GH-7981]
+
+## 1.8.7 (November 4, 2016)
+
+IMPROVEMENTS:
+
+  - guests/linux: Place ethernet devices at start of network devices list [GH-7848]
+  - guests/linux: Provide more consistent guest detection [GH-7887, GH-7827]
+  - guests/openbsd: Validate guest rsync installation success [GH-7929, GH-7898]
+  - guests/redhat: Include Virtuozzo Linux 7 within flavor identification [GH-7818]
+  - guests/windows: Allow vagrant to start Windows Nano without provisioning [GH-7831]
+  - provisioners/ansible_local: Change the Ansible binary detection mechanism [GH-7536]
+  - provisioners/ansible(both): Add the `playbook_command` option [GH-7881]
+  - provisioners/puppet: Support custom environment variables [GH-7931, GH-7252, GH-2270]
+  - util/safe_exec: Use subprocess for safe_exec on Windows [GH-7802]
+  - util/subprocess: Allow closing STDIN [GH-7778]
+
+BUG FIXES:
+
+  - communicators/winrm: Prevent connection leakage [GH-7712]
+  - core: Prevent duplicate provider priorities [GH-7756]
+  - core: Allow Numeric type for box version [GH-7874, GH-6960]
+  - core: Provide friendly error when user environment is too large [GH-7889, GH-7857]
+  - guests: Remove `set -e` usage for better shell compatibility [GH-7921, GH-7739]
+  - guests/linux: Fix incorrectly configured private network [GH-7844, GH-7848]
+  - guests/linux: Properly order network interfaces
+      [GH-7866, GH-7876, GH-7858, GH-7876]
+  - guests/linux: Only emit upstart event if initctl is available [GH-7813]
+  - guests/netbsd: Fix rsync installation [GH-7922, GH-7901]
+  - guests/photon: Fix networking setup [GH-7808, GH-7873]
+  - guests/redhat: Properly configure network and restart service [GH-7751]
+  - guests/redhat: Prevent NetworkManager from managing devices on initial start [GH-7926]
+  - hosts/linux: Fix race condition in writing /etc/exports file for NFS configuration
+      [GH-7947, GH-7938] - Thanks to Aron Griffis (@agriffis) for identifying this issue
+  - plugins/rsync: Escape exclude paths [GH-7928, GH-7910]
+  - providers/docker: Remove --interactive flag when pty is true [GH-7688]
+  - provisioners/ansible_local: Use enquoted path for file/directory existence checks
+  - provisioners/salt: Synchronize configuration defaults with documentation [GH-7907, GH-6624]
+  - pushes/atlas: Fix atlas push on Windows platform [GH-6938, GH-7802]
+
+## 1.8.6 (September 27, 2016)
+
+IMPROVEMENTS:
+
+  - Add detection for DragonFly BSD [GH-7701]
+  - Implement auto_start and auto_stop actions for Hyper-V [GH-7647]
+  - communicators/ssh: Remove any content prepended to STDOUT [GH-7676, GH-7613]
+
+BUG FIXES:
+
+  - commands/package: Provide machine data directory for base box package
+      [GH-5070, GH-7725]
+  - core: Fix windows path formatting [GH-6598]
+  - core: Fixes for ssh-agent interactions [GH-7703, GH-7621, GH-7398]
+  - core: Support VAGRANT_DOTFILE_PATH relative to the Vagrantfile [GH-7623]
+  - guests: Prevent ssh disconnect errors on halt command [GH-7675]
+  - guests/bsd: Remove Darwin matching [GH-7701]
+  - guests/linux: Fix SSH key permissions [GH-7610, GH-7611]
+  - guests/linux: Always sort discovered network interfaces [GH-7705, GH-7668]
+  - guests/linux: Fixes for user and group ID lookups for virtualbox shared folders
+      [GH-7616, GH-7662, GH-7720]
+  - guests/openbsd: Add custom halt capability [GH-7701]
+  - guests/ubuntu: Fix detection on older guests [GH-7632, GH-7524, GH-7625]
+  - hosts/arch: Detect NFS server by service name on arch [GH-7630, GH-7629]
+  - hosts/darwin: Fix generated RDP configuration file [GH-7698]
+  - provisioners/ansible: Add support for `ssh.proxy_command` setting [GH-7752]
+  - synced_folders/nfs: Display warning when configured for NFSv4 and UDP [GH-7740]
+  - synced_folders/rsync: Properly ignore excluded files within synced directory
+      from `chown` command. [GH-5256, GH-7726]
+
+## 1.8.5 (July 18, 2016)
 
 FEATURES:
 
@@ -10,7 +224,9 @@ FEATURES:
 
 IMPROVEMENTS:
 
+  - guests/arch: Support installing synced folder clients [GH-7519]
   - guests/darwin: Allow ipv6 static networks [GH-7491]
+  - providers/virtualbox: Add support for 5.1 [GH-7574]
 
 BUG FIXES:
 
@@ -21,7 +237,18 @@ BUG FIXES:
   - core: Ensure removal of temporary directory when box download fails
       [GH-7496, GH-7499]
   - core: Fix regression for installing plugins from path [GH-7505, GH-7493]
+  - core: Skip checking conflicts on disabled ports [GH-7587]
+  - core: Idempotent write-out for state file [GH-7550]
   - core/guests: Create common BSD guest for shared logic
+  - core/guests: Ignore empty output from `/sbin/ip`
+      [GH-7539, GH-7537, GH-7533, GH-7605]
+  - synced_folders/nfs: Shellescape rsync paths
+      [GH-7540, GH-7605]
+  - synced_folders/nfs: Ensure retries take place [GH-6360, GH-7605]
+  - synced_folders/rsync: Shellescape rsync paths
+      [GH-7580, GH-6690, GH-7579, GH-7605]
+  - synced_folders/rsync: Translate Windows paths
+      [GH-7012, GH-6702, GH-6568, GH-7046]
   - guests/bsd: Consolidate core logic for mounting NFS folders
       [GH-7480, GH-7474, GH-7466]
   - guests/bsd: Consolidate core logic for public key management [GH-7481]
@@ -32,6 +259,9 @@ BUG FIXES:
   - guests/linux: Ensure NFS retries during mounting [GH-7492]
   - guests/redhat: Use `/sbin/ip` to list and configure networks for
       compatability with older versions of CentOS [GH-7482]
+  - guests/redhat: Ensure newline when inserting public key [GH-7598, GH-7605]
+  - guests/ubuntu: Use /etc/os-release to detech [GH-7524]
+  - guests/ubuntu: Use short hostname [GH-7488, GH-7605]
   - providers/hyperv: Fix version check and catch statement [GH-7447, GH-7487]
 
 ## 1.8.4 (June 13, 2016)
